@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CinemaManager_GEG1.Models.Cinema;
+using CinemaManager_GEG1.Models.ViewModels;
 
 namespace CinemaManager_GEG1.Controllers
 {
@@ -32,8 +33,18 @@ namespace CinemaManager_GEG1.Controllers
 
         public IActionResult MoviesAndTheirProds_UsingModel()
         {
-            
-            return View();
+            var movies = _context.Movies.ToList();
+            var prods = _context.Producers.ToList();
+            var query = from m in movies
+            join p in prods on m.ProducerId equals p.Id
+            select new ProdMovie
+            {
+                mTitle = m.Title,
+                mGenre = m.Genre,
+                pName = p.Name,
+                pNat = p.Nationality
+            };
+            return View(query.ToList());
         }
 
         // GET: Movies/Details/5
