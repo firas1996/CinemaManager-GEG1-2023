@@ -47,6 +47,56 @@ namespace CinemaManager_GEG1.Controllers
             return View(query.ToList());
         }
 
+        public IActionResult SearchByTitle(string title)
+        {
+            var movies = _context.Movies;
+            if(title == null)
+            {
+                return View(movies.ToList());
+            }
+            var FM = from m in movies where m.Title.Contains(title) select m;
+            return View(FM.ToList());
+        }
+
+        public IActionResult SearchByGenre(string genre)
+        {
+            var movies = _context.Movies;
+            if (genre == null)
+            {
+                return View(movies.ToList());
+            }
+            var FM = movies.Where(m => m.Genre.Contains(genre));
+            return View(FM.ToList());
+        }
+
+        public IActionResult SearchBy2()
+        {
+            var movies = _context.Movies.ToList();
+            ViewBag.Genres = movies.Select(m=>m.Genre).Distinct().ToList();
+            return View(movies);
+        }
+        [HttpPost]
+        public IActionResult SearchBy2(string title, string genre)
+        {
+            var movies = _context.Movies.AsQueryable();
+            ViewBag.Genres = movies.Select(m => m.Genre).Distinct().ToList();
+            if (genre != "All")
+            {
+                if (!String.IsNullOrEmpty(title))
+                {
+                    movies = movies.Where(m => m.Title.Contains(title));
+                }
+                movies = movies.Where(m => m.Genre == genre);
+            }
+            if (!String.IsNullOrEmpty(title))
+            {
+                movies = movies.Where(m => m.Title.Contains(title));
+            }
+        
+
+            return View("SearchBy2",movies.ToList());
+        }
+
         // GET: Movies/Details/5
         public async Task<IActionResult> Details(int? id)
         {
